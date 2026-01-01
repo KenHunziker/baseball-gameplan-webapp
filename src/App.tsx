@@ -3,6 +3,7 @@ import { Printer } from 'lucide-react';
 import GameInfo from './components/GameInfo';
 import RosterManager from './components/RosterManager';
 import InningDiamonds from './components/InningDiamonds';
+import PrintView from './components/PrintView';
 import { GameData, Lineup } from './types';
 
 function App() {
@@ -16,6 +17,11 @@ function App() {
     'Player 1', 'Player 2', 'Player 3', 'Player 4', 'Player 5',
     'Player 6', 'Player 7', 'Player 8', 'Player 9', 'Player 10'
   ]);
+
+  // Print-only for now; later you can wire this to an editor
+  const [battingOrder, setBattingOrder] = useState<string[]>(
+    Array(10).fill('')
+  );
 
   const [lineups, setLineups] = useState<Lineup[]>([
     { inning: 1, positions: {} },
@@ -42,17 +48,18 @@ function App() {
     <div className="flex flex-col md:flex-row h-screen bg-gray-100 overflow-hidden">
       {/* SIDEBAR: Management Tools (hidden on print) */}
       <aside className="w-full md:w-80 bg-white border-b md:border-b-0 md:border-r border-gray-200 overflow-y-auto p-4 md:p-6 print:hidden">
-      <div className="flex items-center gap-2 mb-6 md:mb-8">
-      <h1 className="text-xl md:text-2xl font-bold text-gray-900">Coach's Console</h1>
+        <div className="flex items-center gap-2 mb-6 md:mb-8">
+          <h1 className="text-xl md:text-2xl font-bold text-gray-900">Coach's Console</h1>
         </div>
         <div className="space-y-6">
           <GameInfo gameData={gameData} setGameData={setGameData} />
           <RosterManager roster={roster} setRoster={setRoster} />
+          {/* You can add a BattingOrder editor here later and bind setBattingOrder */}
         </div>
       </aside>
 
-      {/* MAIN: Printable content */}
-      <main className="flex-1 overflow-y-auto min-w-0">
+      {/* MAIN: Interactive content (hidden on print) */}
+      <main className="flex-1 overflow-y-auto min-w-0 print:hidden">
         <div className="max-w-7xl mx-auto p-4 md:p-6 print:p-8">
           <div className="bg-white rounded-lg shadow-lg p-4 md:p-8 print:shadow-none">
             <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 md:gap-0 mb-6 md:mb-8 print:mb-6">
@@ -77,6 +84,16 @@ function App() {
           </div>
         </div>
       </main>
+
+      {/* PRINT-ONLY VIEW */}
+      <div className="hidden print:block flex-1">
+        <PrintView
+          gameData={gameData}
+          battingOrder={battingOrder}
+          lineups={lineups}
+          roster={roster}
+        />
+      </div>
     </div>
   );
 }
